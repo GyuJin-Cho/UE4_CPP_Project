@@ -9,6 +9,7 @@
 #include "CHealthBar.h"
 #include "CUserWidget_SkillSets.h"
 #include "CUserWidget_AxeSklii.h"
+#include "CUserWidget_Quest.h"
 #include "Blueprint/UserWidget.h"
 #include "Action/IWeapon.h"
 #include "Action/CSpawnWeapon.h"
@@ -68,6 +69,7 @@ ACMainPayer::ACMainPayer()
 	CHelpers::GetClass<UCStartMenu>(&StartLevelWidgetClass, "WidgetBlueprint'/Game/Widgets/Widgets/WB_StartLevel.WB_StartLevel_C'");
 	CHelpers::GetClass<UCUserWidget_SkillSets>(&SkillsetsClass, "WidgetBlueprint'/Game/Widgets/Widgets/WB_SkillSets.WB_SkillSets_C'");
 	CHelpers::GetClass<UCUserWidget_AxeSklii>(&AxeSkillsetsClass, "	WidgetBlueprint'/Game/Widgets/Widgets/WB_AxeSkillSet.WB_AxeSkillSet_C'");
+	CHelpers::GetClass<UCUserWidget_Quest>(&QuestClass, "WidgetBlueprint'/Game/Widgets/Widgets/WB_Quest.WB_Quest_C'");
 	StaminaDrainRate = 0.05f;
 
 }
@@ -84,6 +86,10 @@ void ACMainPayer::BeginPlay()
 	StartLevelWidget = CreateWidget<UCStartMenu>(GetWorld(), StartLevelWidgetClass);
 	SkillsetsWidget = CreateWidget<UCUserWidget_SkillSets>(GetWorld(), SkillsetsClass);
 	AxeSkillsetsWidget = CreateWidget<UCUserWidget_AxeSklii>(GetWorld(), AxeSkillsetsClass);
+	QuestWidget = CreateWidget<UCUserWidget_Quest>(GetWorld(), QuestClass);
+	QuestWidget->MinionUpdate(MinionCount);
+	QuestWidget->SpiderUpdate(SpiderCount);
+
 	Load();
 	if (!bShow)
 	{
@@ -94,7 +100,9 @@ void ACMainPayer::BeginPlay()
 	else
 	{
 		HelthBarWidget->AddToViewport();
+		QuestWidget->AddToViewport();
 		HelthBarWidget->SetVisibility(ESlateVisibility::Visible);
+		QuestWidget->SetVisibility(ESlateVisibility::Visible);
 		StartLevelWidget->SetVisibility(ESlateVisibility::Hidden);
 		Save();
 	}
@@ -320,6 +328,20 @@ void ACMainPayer::Heal()
 {
 	Status->AddHealth(10.0f);
 	HelthBarWidget->HealthUpdate(Status->GetHealth(), Status->GetMaxHealth());
+}
+
+void ACMainPayer::SubSpider()
+{
+	if (SpiderCount > 0)
+		SpiderCount--;
+	QuestWidget->SpiderUpdate(SpiderCount);
+}
+
+void ACMainPayer::SubMinion()
+{
+	if(MinionCount>0)
+		MinionCount--;
+	QuestWidget->MinionUpdate(MinionCount);
 }
 
 void ACMainPayer::AttackMontage()

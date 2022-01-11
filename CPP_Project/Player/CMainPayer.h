@@ -53,6 +53,9 @@ public:
 
 	void DeadAffter();
 	void Heal();
+	
+	void SubSpider();
+	void SubMinion();
 private:
 	void OnMoveForward(float InAxis);
 	void OnMoveRight(float InAxis);
@@ -110,14 +113,17 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 		TSubclassOf<class UCUserWidget_AxeSklii> AxeSkillsetsClass;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+		TSubclassOf<class UCUserWidget_Quest> QuestClass;
 
 	class UCStartMenu* StartLevelWidget;
 
 	class UCHealthBar* HelthBarWidget;
 
-
 	class UCUserWidget_SkillSets* SkillsetsWidget;
 	class UCUserWidget_AxeSklii* AxeSkillsetsWidget;
+
+	class UCUserWidget_Quest* QuestWidget;
 
 	class IIWeapon* Weapon;
 	class IIWeapon* WeaponEquip;
@@ -128,7 +134,6 @@ private:
 	class UAnimMontage* ESkill[2];
 	class AController* DamageInstigator;
 	class APlayerController* Controller;
-
 
 private:
 	EWeaponMode WeaponMode = EWeaponMode::Unarmed;
@@ -141,6 +146,8 @@ private:
 	float StaminaDrainRate;
 	FString SaveSlotName = "Save";
 	int32 NextCombo = 0;
+	int32 MinionCount = 2;
+	int32 SpiderCount = 1;
 	class UCSaveGame* SaveGameInstance;
 	class UCSaveGame* LoadGameInstance;
 };

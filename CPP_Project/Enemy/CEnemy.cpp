@@ -176,6 +176,8 @@ void ACEnemy::Dead()
 	AttackCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	PlayAnimMontage(MontageDead);
+	ACMainPayer* player = Cast<ACMainPayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	player->SubSpider();
 	
 }
 
