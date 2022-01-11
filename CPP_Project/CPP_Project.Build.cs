@@ -1,0 +1,25 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+using UnrealBuildTool;
+
+public class CPP_Project : ModuleRules
+{
+	public CPP_Project(ReadOnlyTargetRules Target) : base(Target)
+	{
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+	
+		PublicDependencyModuleNames.AddRange(new string[]
+		{	"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"UMG",
+			"AIModule",
+			"GameplayTasks"
+		});
+
+		PublicIncludePaths.Add(ModuleDirectory);
+
+
+	}
+}
