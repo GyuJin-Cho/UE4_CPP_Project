@@ -5,6 +5,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Sound/SoundCue.h"
 #include "Player/CMainPayer.h"
@@ -14,6 +16,7 @@
 #include "TimerManager.h"
 #include "AIController.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Particles/ParticleSystem.h"
 
 ACEnemyMinion::ACEnemyMinion()
 {
@@ -38,6 +41,10 @@ ACEnemyMinion::ACEnemyMinion()
 	TSubclassOf<UAnimInstance> animInstance;
 	CHelpers::GetClass<UAnimInstance>(&animInstance, "AnimBlueprint'/Game/Enemy/ABP_EnemyMinion.ABP_EnemyMinion_C'");
 	GetMesh()->SetAnimInstanceClass(animInstance);
+
+	UParticleSystem* particle;
+	CHelpers::GetAsset<UParticleSystem>(&particle, "ParticleSystem'/Game/Particle/PS_Blood_Splatter.PS_Blood_Splatter'");
+	HitParticle = particle;
 
 	CHelpers::GetClass<UCEnemyHelath>(&SelectWidgetClass, "WidgetBlueprint'/Game/Widgets/Widgets/WB_EnemyMinionHealthBar.WB_EnemyMinionHealthBar_C'");
 	HealthWidget->SetWidgetClass(SelectWidgetClass);
@@ -116,21 +123,25 @@ void ACEnemyMinion::HittedEnd()
 
 void ACEnemyMinion::CollisionLeftHandOn()
 {
+	bAttackLeft = true;
 	AttackLeftCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void ACEnemyMinion::CollisionLeftHandOff()
 {
+	bAttackLeft = false;
 	AttackLeftCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ACEnemyMinion::CollisionRightHandOn()
 {
+	bAttackRight = true;
 	AttackRightCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void ACEnemyMinion::CollisionRightHandOff()
 {
+	bAttackRight = false;
 	AttackRightCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -178,9 +189,32 @@ void ACEnemyMinion::OnBeginOverlapAttack(UPrimitiveComponent* OverlappedComponen
 	{
 		if (playerHittedCheck.Num() > 0)
 			return;
+
 		ACMainPayer* player = Cast<ACMainPayer>(OtherActor);
-		playerHittedCheck.Add(player);
-		player->Hitted(Power);
+		if (player)
+		{
+			playerHittedCheck.Add(player);
+			if (bAttackLeft)
+			{
+				const USkeletalMeshSocket* tipSocket = GetMesh()->GetSocketByName("TipSocketL");
+				if (tipSocket)
+				{
+					FVector socketLocation = tipSocket->GetSocketLocation(GetMesh());
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), player->HitParticle, socketLocation, FRotator(0.0f), false);
+				}
+			}
+			else if (bAttackRight)
+			{
+				const USkeletalMeshSocket* tipSocket = GetMesh()->GetSocketByName("TipSocketR");
+				if (tipSocket)
+				{
+					FVector socketLocation = tipSocket->GetSocketLocation(GetMesh());
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), player->HitParticle, socketLocation, FRotator(0.0f), false);
+				}
+			}
+			
+			player->Hitted(Power);
+		}
 	}
 }
 

@@ -20,6 +20,7 @@
 #include "CStartMenu.h"
 #include "Save/CSaveGame.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Particles/ParticleSystem.h"
 
 ACMainPayer::ACMainPayer()
 {
@@ -51,6 +52,10 @@ ACMainPayer::ACMainPayer()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = 400.0f;
 	bUseControllerRotationYaw = false;
+
+	UParticleSystem* particle;
+	CHelpers::GetAsset<UParticleSystem>(&particle, "ParticleSystem'/Game/Particle/PS_Blood_Splatter.PS_Blood_Splatter'");
+	HitParticle = particle;
 
 	//Montage
 	CHelpers::GetAsset<UAnimMontage>(&MontageSword[0], "AnimMontage'/Game/Chracter/Montage/Attack1_Montage.Attack1_Montage'");

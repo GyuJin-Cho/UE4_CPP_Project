@@ -5,6 +5,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Sound/SoundCue.h"
 #include "Player/CMainPayer.h"
@@ -14,6 +16,8 @@
 #include "TimerManager.h"
 #include "AIController.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Particles/ParticleSystem.h"
+
 ACEnemy::ACEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -36,6 +40,10 @@ ACEnemy::ACEnemy()
 	TSubclassOf<UAnimInstance> animInstance;
 	CHelpers::GetClass<UAnimInstance>(&animInstance, "AnimBlueprint'/Game/Enemy/ABP_Enemy.ABP_Enemy_C'");
 	GetMesh()->SetAnimInstanceClass(animInstance);
+
+	UParticleSystem* particle;
+	CHelpers::GetAsset<UParticleSystem>(&particle, "ParticleSystem'/Game/Particle/PS_Blood_Splatter.PS_Blood_Splatter'");
+	HitParticle = particle;
 
 	CHelpers::GetClass<UCEnemyHelath>(&SelectWidgetClass, "WidgetBlueprint'/Game/Widgets/Widgets/WB_EnemyHealthBar.WB_EnemyHealthBar_C'");
 	HealthWidget->SetWidgetClass(SelectWidgetClass);
@@ -110,14 +118,25 @@ void ACEnemy::OnBeginOverlapAttack(UPrimitiveComponent* OverlappedComponent, AAc
 
 	if (OtherActor == this)
 		return;
-
+	
 	if (Cast<ACMainPayer>(OtherActor))
 	{
 		if (playerHittedCheck.Num() > 0)
 			return;
 		ACMainPayer* player = Cast<ACMainPayer>(OtherActor);
-		playerHittedCheck.Add(player);
-		player->Hitted(Power);
+		if (player)
+		{
+			playerHittedCheck.Add(player);
+
+			const USkeletalMeshSocket* tipSocket = GetMesh()->GetSocketByName("TipSocket");
+			if (tipSocket)
+			{
+				FVector socketLocation = tipSocket->GetSocketLocation(GetMesh());
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), player->HitParticle, socketLocation, FRotator(0.0f), false);
+			}
+
+			player->Hitted(Power);
+		}
 	}
 }
 

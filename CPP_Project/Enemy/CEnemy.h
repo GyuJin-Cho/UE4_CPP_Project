@@ -22,6 +22,9 @@ public:
 		float AttackMaxTime = 3.5f;
 
 	FTimerHandle AttackTimer;
+
+	UPROPERTY(EditDefaultsOnly)
+		class UParticleSystem* HitParticle;
 protected:
 	virtual void BeginPlay() override;
 
@@ -67,6 +70,7 @@ protected:
 		class UCStateComponent* State;
 	UPROPERTY(EditDefaultsOnly)
 		class UCStatusComponent* Status;
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 		TSubclassOf<class UCEnemyHelath> SelectWidgetClass;

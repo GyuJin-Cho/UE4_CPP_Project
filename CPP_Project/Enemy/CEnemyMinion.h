@@ -21,6 +21,9 @@ public:
 		float AttackMaxTime = 3.5f;
 
 	FTimerHandle AttackTimer;
+
+	UPROPERTY(EditDefaultsOnly)
+		class UParticleSystem* HitParticle;
 protected:
 	virtual void BeginPlay() override;
 
@@ -107,5 +110,8 @@ private:
 	float Power = 20.0f;
 
 	TArray<ACMainPayer*> playerHittedCheck;
+
+	bool bAttackRight = false;
+	bool bAttackLeft = false;
 
 };

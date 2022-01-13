@@ -22,6 +22,9 @@ class CPP_PROJECT_API ACMainPayer : public ACharacter, public IGenericTeamAgentI
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "TeamID")
 		uint8 TeamID = 0;
+
+	UPROPERTY(EditDefaultsOnly)
+		class UParticleSystem* HitParticle;
 private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class USpringArmComponent* SpringArm;
@@ -134,6 +137,7 @@ private:
 	class UAnimMontage* ESkill[2];
 	class AController* DamageInstigator;
 	class APlayerController* Controller;
+
 
 private:
 	EWeaponMode WeaponMode = EWeaponMode::Unarmed;

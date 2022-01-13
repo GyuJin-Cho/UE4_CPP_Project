@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "Player/CMainPayer.h"
 #include "Enemy/CEnemy.h"
+#include "Enemy/CEnemyMinion.h"
 #include "GameFramework/Character.h"
 #include "Sound/SoundCue.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -49,7 +50,8 @@ void ACAxeWeapon::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	CheckNull(OtherActor);
 
 	//한번 피격된 캐릭터는 충돌 처리에서 제외
-	if (Cast<ACharacter>(OtherActor))
+	ACEnemy* enemy = Cast<ACEnemy>(OtherActor);
+	if (enemy)
 	{
 		for (int i = 0; i < HittedCharacter.Num(); i++)
 		{
@@ -57,6 +59,40 @@ void ACAxeWeapon::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 				return;
 		}
 		HittedCharacter.Add(Cast<ACharacter>(OtherActor));
+
+		if (enemy->HitParticle)
+		{
+			const USkeletalMeshSocket* weaponSocket = Mesh->GetSocketByName("WeaponSocket");
+			if (weaponSocket)
+			{
+				FVector socketLocation = weaponSocket->GetSocketLocation(Mesh);
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemy->HitParticle, socketLocation, FRotator(0.f), true);
+			}
+		}
+
+		FDamageEvent e;
+		OtherActor->TakeDamage(Power, e, UGameplayStatics::GetPlayerController(GetWorld(), 0), this);
+	}
+
+	ACEnemyMinion* enemyminion = Cast<ACEnemyMinion>(OtherActor);
+	if (enemyminion)
+	{
+		for (int i = 0; i < HittedCharacter.Num(); i++)
+		{
+			if (HittedCharacter[i] == Cast<ACharacter>(OtherActor))
+				return;
+		}
+		HittedCharacter.Add(Cast<ACharacter>(OtherActor));
+
+		if (enemyminion->HitParticle)
+		{
+			const USkeletalMeshSocket* weaponSocket = Mesh->GetSocketByName("WeaponSocket");
+			if (weaponSocket)
+			{
+				FVector socketLocation = weaponSocket->GetSocketLocation(Mesh);
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemyminion->HitParticle, socketLocation, FRotator(0.f), true);
+			}
+		}
 
 		FDamageEvent e;
 		OtherActor->TakeDamage(Power, e, UGameplayStatics::GetPlayerController(GetWorld(), 0), this);
