@@ -63,7 +63,6 @@ void ACAIController_Minion::OnPerceptionUpdated(const TArray<AActor*>& UpdatedAc
 {
 	TArray<AActor*> actors;
 	Perception->GetCurrentlyPerceivedActors(nullptr, actors);
-	CLog::Print("Perception");
 	ACMainPayer* player = nullptr;
 	for (AActor* actor : actors)
 	{

@@ -331,7 +331,7 @@ void ACMainPayer::DeadAffter()
 
 void ACMainPayer::Heal()
 {
-	Status->AddHealth(10.0f);
+	Status->AddHealth(20.0f);
 	HelthBarWidget->HealthUpdate(Status->GetHealth(), Status->GetMaxHealth());
 }
 

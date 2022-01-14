@@ -150,8 +150,8 @@ private:
 	float StaminaDrainRate;
 	FString SaveSlotName = "Save";
 	int32 NextCombo = 0;
-	int32 MinionCount = 2;
-	int32 SpiderCount = 1;
+	int32 MinionCount = 8;
+	int32 SpiderCount = 15;
 	class UCSaveGame* SaveGameInstance;
 	class UCSaveGame* LoadGameInstance;
 };

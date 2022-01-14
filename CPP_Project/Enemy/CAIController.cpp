@@ -63,7 +63,6 @@ void ACAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
 	TArray<AActor*> actors;
 	Perception->GetCurrentlyPerceivedActors(nullptr, actors);
-	CLog::Print("Perception");
 	ACMainPayer* player = nullptr;
 	for (AActor* actor : actors)
 	{
